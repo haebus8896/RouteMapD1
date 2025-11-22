@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useStore } from '../useStore';
-import { createAddress, getAddressByCode, updateAddress } from '../api';
+import { createAddress, getAddressByCode, updateAddress, nearbyAddresses as fetchNearbyAddresses } from '../api';
 
 const Field = ({ label, children }) => (
   <label className="form-field">
@@ -129,6 +129,16 @@ export default function AddressComposer() {
       }
       setSavedAddress(address);
       setIsEditing(false);
+
+      // Refresh nearby addresses after save
+      if (address.destination_point) {
+        try {
+          const nearby = await fetchNearbyAddresses(address.destination_point.lat, address.destination_point.lng, 100);
+          useStore.getState().setNearbyAddresses(nearby || []);
+        } catch (e) {
+          console.error('Failed to refresh nearby addresses', e);
+        }
+      }
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || 'Failed to save address');
@@ -281,7 +291,7 @@ export default function AddressComposer() {
 
       <div className="panel-subsection">
         <h4>Nearby saved addresses ({nearbyAddresses.length})</h4>
-        {nearbyAddresses.length === 0 && <p className="muted">None within 50m yet.</p>}
+        {nearbyAddresses.length === 0 && <p className="muted">None within 100m yet.</p>}
         <div className="list">
           {nearbyAddresses.map((addr) => (
             <div key={addr.id} className="list-item">

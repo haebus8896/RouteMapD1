@@ -109,7 +109,7 @@ export default function MapScreen() {
       }
 
       try {
-        const results = await nearbyAddresses(point.lat, point.lng, 80);
+        const results = await nearbyAddresses(point.lat, point.lng, 100);
         setNearbyAddresses(results || []);
       } catch (err) {
         console.error(err);
@@ -130,6 +130,12 @@ export default function MapScreen() {
         const { latitude: lat, longitude: lng } = pos.coords;
         const userPoint = { lat, lng };
         setUserLocation(userPoint);
+        // Use this user location as the "focus" or "destination" anchor initially
+        if (typeof s => s.setFocusPoint === 'function') {
+          // but setFocusPoint is from store, we need to call it
+          // Wait, we have focusPoint state here? No, we have useStore.
+        }
+        // panTo(userPoint); // handled by handleMapClick-like logic if we reuse it, but here we do explicit:
         panTo(userPoint);
         await hydrateContext(userPoint);
         setLocating(false);
@@ -144,21 +150,34 @@ export default function MapScreen() {
 
   // drawing handlers
   const handleMapClick = (event) => {
-    if (!drawing) return;
-    
-    // Ensure we have a road start point
-    if (!selectedRoadPoint && !nearestRoadPoint) {
-      setStatus('Please select the highlighted road first before drawing.');
+    const point = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+
+    if (!drawing) {
+      // Not drawing mode: Tap sets the destination / focus point
+      // Move "userLocation" marker or just use a separate marker?
+      // The prompt says "this point will be considered as the destination point".
+      // We'll re-use 'userLocation' to represent the destination anchor for now,
+      // or we can just pass it to hydrateContext.
+      // Let's update the userLocation to this point so the circle/marker moves there,
+      // as that seems to be the visual anchor for "Radius".
+      setUserLocation(point);
+      panTo(point);
+      hydrateContext(point);
       return;
     }
-
-    const point = { lat: event.latLng.lat(), lng: event.latLng.lng() };
     
-    // If polyline is empty, start with the road point, then add the clicked point
+    // STRICT START: User must select the road anchor explicitly to start
+    if (!selectedRoadPoint) {
+      setStatus('Tap the blue road point to start the route.');
+      return;
+    }
+    
+    // Add point to polyline (start point is already in polyline via handleSelectRoad)
     setPolyline((prev) => {
+      // Should not happen if selectedRoadPoint is set (handleSelectRoad inits it),
+      // but safe to handle.
       if (!prev || prev.length === 0) {
-        const start = selectedRoadPoint || nearestRoadPoint;
-        return start ? [start, point] : [point];
+        return [selectedRoadPoint, point];
       }
       return [...prev, point];
     });

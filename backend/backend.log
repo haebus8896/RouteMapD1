@@ -1,0 +1,23 @@
+
+> backend@1.0.0 start
+> node server.js
+
+[dotenv@17.2.3] injecting env (3) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+Server running on port 5001
+MongoDB connection error: MongoServerError: bad auth : authentication failed
+    at Connection.onMessage (/app/backend/node_modules/mongoose/node_modules/mongodb/lib/cmap/connection.js:202:26)
+    at MessageStream.<anonymous> (/app/backend/node_modules/mongoose/node_modules/mongodb/lib/cmap/connection.js:61:60)
+    at MessageStream.emit (node:events:519:28)
+    at processIncomingData (/app/backend/node_modules/mongoose/node_modules/mongodb/lib/cmap/message_stream.js:124:16)
+    at MessageStream._write (/app/backend/node_modules/mongoose/node_modules/mongodb/lib/cmap/message_stream.js:33:9)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Writable.write (node:internal/streams/writable:510:10)
+    at TLSSocket.ondata (node:internal/streams/readable:1009:22)
+    at TLSSocket.emit (node:events:519:28) {
+  ok: 0,
+  code: 8000,
+  codeName: 'AtlasError',
+  connectionGeneration: 0,
+  [Symbol(errorLabels)]: Set(2) { 'HandshakeError', 'ResetPool' }
+}

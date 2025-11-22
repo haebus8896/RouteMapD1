@@ -166,17 +166,18 @@ export default function MapScreen() {
       return;
     }
     
-    // Ensure we have a road start point
-    if (!selectedRoadPoint && !nearestRoadPoint) {
-      setStatus('Please select the highlighted road first before drawing.');
+    // STRICT START: User must select the road anchor explicitly to start
+    if (!selectedRoadPoint) {
+      setStatus('Tap the blue road point to start the route.');
       return;
     }
     
-    // If polyline is empty, start with the road point, then add the clicked point
+    // Add point to polyline (start point is already in polyline via handleSelectRoad)
     setPolyline((prev) => {
+      // Should not happen if selectedRoadPoint is set (handleSelectRoad inits it),
+      // but safe to handle.
       if (!prev || prev.length === 0) {
-        const start = selectedRoadPoint || nearestRoadPoint;
-        return start ? [start, point] : [point];
+        return [selectedRoadPoint, point];
       }
       return [...prev, point];
     });

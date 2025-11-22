@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>RouteMapD1 — Road Overlay & Manual Drawing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Add your Google Maps JavaScript API key below (replace YOUR_GOOGLE_MAPS_API_KEY) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
+  </head>
+  <body>
+    <div id="controls">
+      <button id="btnFindMe">Find My Location</button>
+      <button id="btnSaveAddress" disabled>Save Address</button>
+      <div id="savedAddressesContainer" class="panel hidden"></div>
+    </div>
+    <div id="map"></div>
+
+    <script type="module" src="src/map.js"></script>
+  </body>
+</html>
